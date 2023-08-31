@@ -1,7 +1,7 @@
-import Home from "./routes/Home";
+import Register from "./routes/Register";
 
 function App() {
-  return <Home></Home>;
+  return <Register />;
 }
 
 export default App;
