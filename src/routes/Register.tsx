@@ -6,6 +6,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth/cordova";
 import { doc, setDoc } from "firebase/firestore";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
   displayName: string;
@@ -16,7 +18,9 @@ type FormData = {
 
 const Register = () => {
   const [error, setError] = useState(false);
-  const [file, setFile] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -33,6 +37,7 @@ const Register = () => {
   }) => {
     const avatar = files[0];
     try {
+      setIsLoading(true);
       const responce = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -54,10 +59,10 @@ const Register = () => {
               email,
               photoURL: downloadURL
             });
-            // await setDoc(doc(db, "userChats", responce.user.uid), {
-
-            // })
+            await setDoc(doc(db, "userChats", responce.user.uid), {});
+            navigate("/");
             console.log("Success!");
+            setIsLoading(false);
           } catch (error) {
             console.log(error);
           }
@@ -126,17 +131,19 @@ const Register = () => {
             id="file"
             {...register("files")}
             className=" hidden mt-4"
-            onChange={() => setFile(true)}
           />
           <label
             htmlFor="file"
             className="px-2 flex items-center gap-2 cursor-pointer mt-4">
             <MdOutlineAddPhotoAlternate size="2.5em" className="text-sky-400" />
             <span className="text-sm text-sky-400 font-medium">
-              {file ? "Avatar added." : "Add an avatar."}
+              Add an avatar.
             </span>
           </label>
-          <button className="w-full max-w-[300px] rounded bg-sky-400 hover:bg-sky-500 min-h-[35px] text-white font-medium transition-all duration-200">
+          <button className="w-full max-w-[300px] rounded bg-sky-400 hover:bg-sky-500 min-h-[35px] text-white font-medium transition-all duration-200 flex items-center justify-center gap-x-2">
+            {isLoading && (
+              <AiOutlineLoading3Quarters className="animate-spin" />
+            )}
             Sign up
           </button>
           {error && <div>Something went wrong</div>}
