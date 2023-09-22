@@ -7,7 +7,7 @@ import { updateProfile } from "firebase/auth/cordova";
 import { doc, setDoc } from "firebase/firestore";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type FormData = {
   displayName: string;
@@ -117,7 +117,11 @@ const Register = () => {
           <input
             type="password"
             {...register("password", {
-              required: "Password is required."
+              required: "Password is required.",
+              minLength: {
+                value: 6,
+                message: "Password should have at least 6 characters"
+              }
             })}
             placeholder="Password"
             className="w-[90%] border-b-2 max-w-[300px] px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-500"></input>
@@ -151,9 +155,9 @@ const Register = () => {
         <div className="flex flex-col items-center">
           <span className=" font-medium text-gray-700">
             You do have an account?
-            <a href="" className="text-sky-400 font-medium ml-2">
+            <Link to="/login" className="text-sky-400 font-medium ml-2">
               Login
-            </a>
+            </Link>
           </span>
         </div>
       </div>
