@@ -3,6 +3,7 @@ import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 type FormData = {
   email: string;
@@ -10,8 +11,8 @@ type FormData = {
 };
 
 const Login = () => {
-  const [error, setError] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -24,10 +25,12 @@ const Login = () => {
 
   const onSubmit: SubmitHandler<FormData> = async ({ email, password }) => {
     try {
+      setIsLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
+      setIsLoading(false);
       navigate("/");
     } catch (error) {
-      setError(true);
+      setError(`${error}`);
       console.log(error);
     }
   };
@@ -63,11 +66,7 @@ const Login = () => {
             placeholder="Password"
             className="w-[90%] border-b-2 max-w-[300px] px-2 py-1 focus:outline-none focus:ring-0 focus:border-gray-500"
             {...register("password", {
-              required: "Password is required.",
-              minLength: {
-                value: 6,
-                message: "Password should have at least 6 characters"
-              }
+              required: "Password is required."
             })}></input>
           {errors.password && (
             <p className="absolute top-24 left-1/2 -translate-x-1/2 text-red-500 text-xs">
@@ -75,10 +74,13 @@ const Login = () => {
             </p>
           )}
 
-          <button className="w-full max-w-[300px] rounded bg-sky-400 hover:bg-sky-500 min-h-[35px] text-white font-medium transition-all duration-200">
+          <button className="w-full max-w-[300px] rounded bg-sky-400 hover:bg-sky-500 min-h-[35px] text-white font-medium transition-all duration-200 flex items-center justify-center gap-x-2">
+            {isLoading && (
+              <AiOutlineLoading3Quarters className="animate-spin" />
+            )}
             Sign in
           </button>
-          {error && <div>Something went wrong</div>}
+          {error && <div>{error}</div>}
         </form>
         <div className="flex flex-col items-center">
           <span className=" font-medium text-gray-700">
